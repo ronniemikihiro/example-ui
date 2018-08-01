@@ -18,6 +18,7 @@ import { CategoriaService } from '../service/categoria.service';
 import { NavbarComponent } from './navbar/navbar.component';
 import { NaoAutorizadoComponent } from './nao-autorizado.component';
 import { PaginaNaoEncontradaComponent } from './pagina-nao-encontrada.component';
+import { RodapeComponent } from './rodape/rodape.component';
 
 @NgModule({
   imports: [
@@ -31,11 +32,13 @@ import { PaginaNaoEncontradaComponent } from './pagina-nao-encontrada.component'
   ],
   declarations: [
     NavbarComponent,
+    RodapeComponent,
     PaginaNaoEncontradaComponent,
     NaoAutorizadoComponent
   ],
   exports: [
     NavbarComponent,
+    RodapeComponent,
     ToastyModule,
     ConfirmDialogModule
   ],
