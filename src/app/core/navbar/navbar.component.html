@@ -1,7 +1,7 @@
 <div class="topnav" id="myTopnav">
   <a class="active" routerLink="/lancamentos" (click)="toggleNavbar()"><i class="fa fa-home"></i> Home</a>
-  <a *ngIf="authService.temPermissao('ROLE_PESQUISAR_LANCAMENTO')" routerLink="/lancamentos" (click)="toggleNavbar()"><i class="fa fa-pencil"></i> Lançamentos</a>
-  <a *ngIf="authService.temPermissao('ROLE_PESQUISAR_PESSOA')" routerLink="/pessoas" (click)="toggleNavbar()"><i class="fa fa-users"></i> Pessoas</a>
+  <a *ngIf="authService.hasRole('ROLE_PESQUISAR_LANCAMENTO')" routerLink="/lancamentos" (click)="toggleNavbar()"><i class="fa fa-pencil"></i> Lançamentos</a>
+  <a *ngIf="authService.hasRole('ROLE_PESQUISAR_PESSOA')" routerLink="/pessoas" (click)="toggleNavbar()"><i class="fa fa-users"></i> Pessoas</a>
 
   <div class="dropdown">
     <button class="dropbtn" (click)="expandDropdown('dropDownSobre')">

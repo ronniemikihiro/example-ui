@@ -7,10 +7,7 @@ import { ToastyService } from 'ng2-toasty';
 @Injectable()
 export class ErrorHandlerService {
 
-  constructor(
-    private toasty: ToastyService,
-    private router: Router
-  ) { }
+  constructor(private toasty: ToastyService, private router: Router) { }
 
   handle(errorResponse: any) {
     let msg: string;

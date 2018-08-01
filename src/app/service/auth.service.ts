@@ -87,11 +87,11 @@ export class AuthService extends AbstractService {
   }
 
   /**
-   * Retorna as permissões(authorities) do usuário.
+   * Retorna true se o usuário tiver a permissão passado por parâmetro.
    * 
    * @param permissao
    */
-  temPermissao(permissao: string) {
+  hasRole(permissao: string) {
     return this.jwtPayload && this.jwtPayload.authorities.includes(permissao);
   }
 
@@ -100,8 +100,8 @@ export class AuthService extends AbstractService {
    * 
    * @param roles 
    */
-  temQualquerPermissao(roles: Array<string>) {
-    return roles.findIndex(role => this.temPermissao(role)) > -1 ? true : false;
+  hasAnyRole(roles: Array<string>) {
+    return roles.find(role => this.hasRole(role)) !== undefined ? true : false;
   }
 
   /**
@@ -119,7 +119,6 @@ export class AuthService extends AbstractService {
    */
   private loadToken() {
     const token = localStorage.getItem('token');
-
     if (token) {
       this.saveToken(token);
     }
