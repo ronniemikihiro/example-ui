@@ -2,11 +2,11 @@ import { URLSearchParams } from '@angular/http';
 import { Injectable } from '@angular/core';
 
 import { AuthHttp } from 'angular2-jwt';
-import * as moment from 'moment';
 import 'rxjs/add/operator/toPromise';
 
 import { Lancamento } from './../core/model';
 import { AbstractService } from '../service/abstract.service';
+import { Util } from '../util/util';
 
 export class LancamentoFiltro {
   descricao: string;
@@ -21,16 +21,14 @@ export class LancamentoService extends AbstractService {
 
   /**
    * Construtor da Classe.
-   * 
-   * @param http 
+   * @param authHttp 
    */
-  constructor(private http: AuthHttp) {
+  constructor(private authHttp: AuthHttp) {
     super('/lancamentos');
   }
 
   /**
    * Realiza a pesquisa paginada dos lancamentos de acordo com o filtro de pesquisa informada.
-   * 
    * @param filtro 
    */
   pesquisar(filtro: LancamentoFiltro): Promise<any> {
@@ -43,40 +41,37 @@ export class LancamentoService extends AbstractService {
       params.set('descricao', filtro.descricao);
     }
     if (filtro.dataVencimentoInicio) {
-      params.set('dataVencimentoDe', moment(filtro.dataVencimentoInicio).format('YYYY-MM-DD'));
+      params.set('dataVencimentoDe', Util.dateToString(filtro.dataVencimentoInicio));
     }
     if (filtro.dataVencimentoFim) {
-      params.set('dataVencimentoAte', moment(filtro.dataVencimentoFim).format('YYYY-MM-DD'));
+      params.set('dataVencimentoAte', Util.dateToString(filtro.dataVencimentoFim));
     }
 
-    return this.http.get(this.getUrl(`/filtro/paginacao`), { search: params }).toPromise().then(this.resolveJsonDataTablePage);
+    return this.authHttp.get(this.getUrl(`/filtro/paginacao`), { search: params }).toPromise().then(this.responseJsonDataTablePage);
   }
 
   /**
    * Exclui um lancamento de acordo com seu código passado.
-   * 
    * @param codigo 
    */
   excluir(codigo: number): Promise<void> {
-    return this.http.delete(this.getUrl(`/${codigo}`)).toPromise().then(() => null);
+    return this.authHttp.delete(this.getUrl(`/${codigo}`)).toPromise().then(() => null);
   }
 
   /**
    * Adiciona um novo lancamento.
-   * 
    * @param lancamento 
    */
   adicionar(lancamento: Lancamento): Promise<Lancamento> {
-    return this.http.post(this.getUrl(), JSON.stringify(lancamento)).toPromise().then(this.resolveJsonData);
+    return this.authHttp.post(this.getUrl(), JSON.stringify(lancamento)).toPromise().then(this.responseJsonData);
   }
 
   /**
    * Atualiza os dados de um lancamento.
-   * 
    * @param lancamento 
    */
   atualizar(lancamento: Lancamento): Promise<Lancamento> {
-    return this.http.put(this.getUrl(`/${lancamento.codigo}`), JSON.stringify(lancamento)).toPromise().then(response => {
+    return this.authHttp.put(this.getUrl(`/${lancamento.codigo}`), JSON.stringify(lancamento)).toPromise().then(response => {
       const lancamentoAlterado = response.json() as Lancamento;
       this.converterStringsParaDatas([lancamentoAlterado]);
       return lancamentoAlterado;
@@ -85,11 +80,10 @@ export class LancamentoService extends AbstractService {
 
   /**
    * Busca um lancamento pelo seu código.
-   * 
    * @param codigo 
    */
   buscarPorCodigo(codigo: number): Promise<Lancamento> {
-    return this.http.get(this.getUrl(`/${codigo}`)).toPromise().then(response => {
+    return this.authHttp.get(this.getUrl(`/${codigo}`)).toPromise().then(response => {
       const lancamento = response.json() as Lancamento;
       this.converterStringsParaDatas([lancamento]);
       return lancamento;
@@ -98,16 +92,15 @@ export class LancamentoService extends AbstractService {
 
   /**
    * Converte as datas em string para Data.
-   * 
-   * @param lancamentos 
+   * @param listLancamentos 
    */
-  private converterStringsParaDatas(lancamentos: Lancamento[]) {
-    for (const lancamento of lancamentos) {
-      lancamento.dataVencimento = moment(lancamento.dataVencimento, 'YYYY-MM-DD').toDate();
-      if (lancamento.dataPagamento) {
-        lancamento.dataPagamento = moment(lancamento.dataPagamento, 'YYYY-MM-DD').toDate();
+  private converterStringsParaDatas(listLancamentos: Lancamento[]) {
+    listLancamentos.forEach(l => {
+      l.dataVencimento = Util.stringToDate(l.dataVencimento);
+      if (l.dataPagamento) {
+        l.dataPagamento = Util.stringToDate(l.dataPagamento);
       }
-    }
+    });
   }
 
 }

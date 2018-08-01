@@ -4,26 +4,22 @@ import { Http, RequestOptions, RequestOptionsArgs, Response } from '@angular/htt
 import { AuthConfig, AuthHttp, JwtHelper } from 'angular2-jwt';
 import { Observable } from 'rxjs/Observable';
 
-import { AuthService } from './auth.service';
+import { AuthService } from '../service/auth.service';
 
 export class NotAuthenticatedError {}
 
 @Injectable()
-export class SegurancaHttp extends AuthHttp {
+export class InterceptHttp extends AuthHttp {
 
   /**
    * Construtor.
    * 
-   * @param auth
+   * @param authService
    * @param options 
    * @param http 
    * @param defOpts 
    */
-  constructor(
-    private auth: AuthService,
-    options: AuthConfig,
-    http: Http, defOpts?: RequestOptions
-  ) {
+  constructor(private authService: AuthService, options: AuthConfig, http: Http, defOpts?: RequestOptions) {
     super(options, http, defOpts);
   }
 
@@ -33,7 +29,7 @@ export class SegurancaHttp extends AuthHttp {
    * @param options 
    */
   public delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    return this.fazerRequisicao(() => super.delete(url, options));
+    return this.executeRequest(() => super.delete(url, options));
   }
 
   /**
@@ -44,7 +40,7 @@ export class SegurancaHttp extends AuthHttp {
    * @param options 
    */
   public patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    return this.fazerRequisicao(() => super.patch(url, options));
+    return this.executeRequest(() => super.patch(url, options));
   }
 
   /**
@@ -55,7 +51,7 @@ export class SegurancaHttp extends AuthHttp {
    * @param options 
    */
   public head(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    return this.fazerRequisicao(() => super.head(url, options));
+    return this.executeRequest(() => super.head(url, options));
   }
 
   /**
@@ -65,7 +61,7 @@ export class SegurancaHttp extends AuthHttp {
    * @param options 
    */
   public options(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    return this.fazerRequisicao(() => super.options(url, options));
+    return this.executeRequest(() => super.options(url, options));
   }
 
   /**
@@ -75,7 +71,7 @@ export class SegurancaHttp extends AuthHttp {
    * @param options 
    */
   public get(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    return this.fazerRequisicao(() => super.get(url, options));
+    return this.executeRequest(() => super.get(url, options));
   }
 
   /**
@@ -86,7 +82,7 @@ export class SegurancaHttp extends AuthHttp {
    * @param options 
    */
   public post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    return this.fazerRequisicao(() => super.post(url, body, options));
+    return this.executeRequest(() => super.post(url, body, options));
   }
 
   /**
@@ -97,7 +93,7 @@ export class SegurancaHttp extends AuthHttp {
    * @param options 
    */
   public put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    return this.fazerRequisicao(() => super.put(url, body, options));
+    return this.executeRequest(() => super.put(url, body, options));
   }
 
   /**
@@ -106,19 +102,19 @@ export class SegurancaHttp extends AuthHttp {
    * 
    * @param fn
    */
-  private fazerRequisicao(fn: Function): Observable<Response> {
-    if (this.auth.isAccessTokenInvalido()) {
+  private executeRequest(fn: Function): Observable<Response> {
+    if (this.authService.isInvalidAccessToken()) {
       console.log('Requisição HTTP com access token inválido. Obtendo novo token...');
 
-      const chamadaNovoAccessToken = this.auth.obterNovoAccessToken().then(() => {
-        if (this.auth.isAccessTokenInvalido()) {
+      const callNewAccessToken = this.authService.getNewAccessToken().then(() => {
+        if (this.authService.isInvalidAccessToken()) {
           throw new NotAuthenticatedError();
         }
 
         return fn().toPromise();
       });
 
-      return Observable.fromPromise(chamadaNovoAccessToken);
+      return Observable.fromPromise(callNewAccessToken);
     } else {
       return fn();
     }

@@ -4,8 +4,8 @@ import { Injectable } from '@angular/core';
 import { AuthHttp } from 'angular2-jwt';
 import 'rxjs/add/operator/toPromise';
 
-import { environment } from './../../environments/environment';
 import { Pessoa } from './../core/model';
+import { AbstractService } from './abstract.service';
 
 export class PessoaFiltro {
   nome: string;
@@ -14,17 +14,15 @@ export class PessoaFiltro {
 }
 
 @Injectable()
-export class PessoaService {
-
-  pessoasUrl: string;
+export class PessoaService extends AbstractService {
 
   /**
    * Construtor da classe.
    *  
    * @param http 
    */
-  constructor(private http: AuthHttp) {
-    this.pessoasUrl = `${environment.apiUrl}/pessoas`;
+  constructor(private authHttp: AuthHttp) {
+    super(`/pessoas`);
   }
 
   /**
@@ -42,28 +40,14 @@ export class PessoaService {
       params.set('nome', filtro.nome);
     }
 
-    return this.http.get(`${this.pessoasUrl}/filtro/paginacao`, { search: params })
-      .toPromise()
-      .then(response => {
-        const responseJson = response.json();
-        const pessoas = responseJson.content;
-
-        const resultado = {
-          pessoas,
-          total: responseJson.totalElements
-        };
-
-        return resultado;
-      })
+    return this.authHttp.get(this.getUrl(`/filtro/paginacao`), { search: params }).toPromise().then(this.responseJsonDataTablePage);
   }
 
   /**
    * Lista todas as pessoas.
    */
   listarTodas(): Promise<any> {
-    return this.http.get(`${this.pessoasUrl}/listar`)
-      .toPromise()
-      .then(response => response.json());
+    return this.authHttp.get(this.getUrl(`/listar`)).toPromise().then(this.responseJsonData);
   }
 
   /**
@@ -72,9 +56,7 @@ export class PessoaService {
    * @param codigo 
    */
   excluir(codigo: number): Promise<void> {
-    return this.http.delete(`${this.pessoasUrl}/${codigo}`)
-      .toPromise()
-      .then(() => null);
+    return this.authHttp.delete(this.getUrl(`/${codigo}`)).toPromise().then(() => null);
   }
 
   /**
@@ -84,9 +66,7 @@ export class PessoaService {
    * @param ativo 
    */
   mudarStatus(codigo: number, ativo: boolean): Promise<void> {
-    return this.http.put(`${this.pessoasUrl}/mudarStatus/${codigo}/ativo`, ativo)
-      .toPromise()
-      .then(() => null);
+    return this.authHttp.put(this.getUrl(`/mudarStatus/${codigo}/ativo`), ativo).toPromise().then(() => null);
   }
 
   /**
@@ -95,9 +75,7 @@ export class PessoaService {
    * @param pessoa 
    */
   adicionar(pessoa: Pessoa): Promise<Pessoa> {
-    return this.http.post(`${this.pessoasUrl}/`, JSON.stringify(pessoa))
-      .toPromise()
-      .then(response => response.json());
+    return this.authHttp.post(this.getUrl(), JSON.stringify(pessoa)).toPromise().then(this.responseJsonData);
   }
 
   /**
@@ -106,9 +84,7 @@ export class PessoaService {
    * @param pessoa 
    */
   atualizar(pessoa: Pessoa): Promise<Pessoa> {
-    return this.http.put(`${this.pessoasUrl}/${pessoa.codigo}`, JSON.stringify(pessoa))
-      .toPromise()
-      .then(response => response.json() as Pessoa);
+    return this.authHttp.put(this.getUrl(`/${pessoa.codigo}`), JSON.stringify(pessoa)).toPromise().then(response => response.json() as Pessoa);
   }
 
   /**
@@ -117,9 +93,7 @@ export class PessoaService {
    * @param codigo 
    */
   buscarPorCodigo(codigo: number): Promise<Pessoa> {
-    return this.http.get(`${this.pessoasUrl}/${codigo}`)
-      .toPromise()
-      .then(response => response.json() as Pessoa);
+    return this.authHttp.get(this.getUrl(`/${codigo}`)).toPromise().then(response => response.json() as Pessoa);
   }
 
 }

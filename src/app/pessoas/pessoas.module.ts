@@ -11,7 +11,7 @@ import { TooltipModule } from 'primeng/components/tooltip/tooltip';
 import { SharedModule } from './../shared/shared.module';
 import { PessoasPesquisaComponent } from './pessoas-pesquisa/pessoas-pesquisa.component';
 import { PessoaCadastroComponent } from './pessoa-cadastro/pessoa-cadastro.component';
-import { PessoasRoutingModule } from './pessoas-routing.module';
+import { PessoasRouter } from './pessoas-router';
 
 /**
  * Módulos utilizados para o CRUD da entidade Pessoa.
@@ -28,7 +28,7 @@ import { PessoasRoutingModule } from './pessoas-routing.module';
     InputMaskModule,
 
     SharedModule,
-    PessoasRoutingModule
+    PessoasRouter
   ],
   declarations: [
     PessoaCadastroComponent,

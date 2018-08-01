@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
 import { ErrorHandlerService } from './../../core/error-handler.service';
-import { AuthService } from './../auth.service';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-login-form',
@@ -18,11 +18,7 @@ export class LoginFormComponent {
    * @param errorHandler 
    * @param router 
    */
-  constructor(
-    private auth: AuthService,
-    private errorHandler: ErrorHandlerService,
-    private router: Router
-  ) { }
+  constructor(private authService: AuthService, private errorHandler: ErrorHandlerService, private router: Router) { }
 
   /**
    * Realiza o login do usuário com sua senha, passando por autenticação auth (com token).
@@ -31,13 +27,11 @@ export class LoginFormComponent {
    * @param senha 
    */
   login(usuario: string, senha: string) {
-    this.auth.login(usuario, senha)
-      .then(() => {
-        this.router.navigate(['/lancamentos']);
-      })
-      .catch(erro => {
-        this.errorHandler.handle(erro);
-      });
+    this.authService.login(usuario, senha).then(() => {
+      this.router.navigate(['/lancamentos']);
+    }).catch(erro => {
+      this.errorHandler.handle(erro);
+    });
   }
 
 }

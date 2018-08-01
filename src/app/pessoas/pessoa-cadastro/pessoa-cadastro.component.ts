@@ -6,7 +6,7 @@ import { FormControl } from '@angular/forms';
 import { ToastyService } from 'ng2-toasty';
 
 import { ErrorHandlerService } from './../../core/error-handler.service';
-import { PessoaService } from './../pessoa.service';
+import { PessoaService } from '../../service/pessoa.service';
 import { Pessoa } from './../../core/model';
 
 @Component({
@@ -63,12 +63,12 @@ export class PessoaCadastroComponent implements OnInit {
    * @param codigo 
    */
   carregarPessoa(codigo: number) {
-    this.pessoaService.buscarPorCodigo(codigo)
-      .then(pessoa => {
-        this.pessoa = pessoa;
-        this.atualizarTituloEdicao();
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+    this.pessoaService.buscarPorCodigo(codigo).then(pessoa => {
+      this.pessoa = pessoa;
+      this.atualizarTituloEdicao();
+    }).catch(erro => {
+      this.errorHandler.handle(erro)
+    });
   }
 
   /**
@@ -90,12 +90,12 @@ export class PessoaCadastroComponent implements OnInit {
    * @param form 
    */
   adicionarPessoa(form: FormControl) {
-    this.pessoaService.adicionar(this.pessoa)
-      .then(pessoaAdicionada => {
-        this.toasty.success('Pessoa adicionada com sucesso!');
-        this.novo(form);
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+    this.pessoaService.adicionar(this.pessoa).then(pessoaAdicionada => {
+      this.toasty.success('Pessoa adicionada com sucesso!');
+      this.novo(form);
+    }).catch(erro => {
+      this.errorHandler.handle(erro)
+    });
   }
 
   /**
@@ -104,13 +104,13 @@ export class PessoaCadastroComponent implements OnInit {
    * @param form 
    */
   atualizarPessoa(form: FormControl) {
-    this.pessoaService.atualizar(this.pessoa)
-      .then(pessoa => {
-        this.pessoa = pessoa;
-        this.toasty.success('Pessoa alterada com sucesso!');
-        this.novo(form);
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+    this.pessoaService.atualizar(this.pessoa).then(pessoa => {
+      this.pessoa = pessoa;
+      this.toasty.success('Pessoa alterada com sucesso!');
+      this.novo(form);
+    }).catch(erro => {
+      this.errorHandler.handle(erro)
+    });
   }
 
   /**

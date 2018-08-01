@@ -1,9 +1,9 @@
 import { Router } from '@angular/router';
 import { Component, OnInit, HostListener } from '@angular/core';
 
-import { LogoutService } from './../../seguranca/logout.service';
+import { LogoutService } from '../../service/logout.service';
 import { ErrorHandlerService } from './../error-handler.service';
-import { AuthService } from './../../seguranca/auth.service';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +17,7 @@ export class NavbarComponent implements OnInit {
   clickToggleNavbar: boolean = false;
 
   constructor(
-    public auth: AuthService,
+    public authService: AuthService,
     private logoutService: LogoutService,
     private errorHandler: ErrorHandlerService,
     private router: Router

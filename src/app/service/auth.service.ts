@@ -4,12 +4,11 @@ import { Injectable } from '@angular/core';
 import { JwtHelper } from 'angular2-jwt';
 import 'rxjs/add/operator/toPromise';
 
-import { environment } from './../../environments/environment';
+import { AbstractService } from '../service/abstract.service';
 
 @Injectable()
-export class AuthService {
+export class AuthService extends AbstractService {
 
-  oauthTokenUrl: string;
   jwtPayload: any;
 
   /**
@@ -18,12 +17,9 @@ export class AuthService {
    * @param http 
    * @param jwtHelper 
    */
-  constructor(
-    private http: Http,
-    private jwtHelper: JwtHelper
-  ) {
-    this.oauthTokenUrl = `${environment.apiUrl}/oauth/token`;
-    this.carregarToken();
+  constructor(private http: Http, private jwtHelper: JwtHelper) {
+    super('/oauth/token');
+    this.loadToken();
   }
 
   /**
@@ -39,55 +35,45 @@ export class AuthService {
 
     const body = `username=${usuario}&password=${senha}&grant_type=password`;
 
-    return this.http.post(this.oauthTokenUrl, body,
-        { headers, withCredentials: true })
-      .toPromise()
-      .then(response => {
-        this.armazenarToken(response.json().access_token);
-      })
-      .catch(response => {
-        if (response.status === 400) {
-          const responseJson = response.json();
+    return this.http.post(this.getUrl(), body, { headers, withCredentials: true }).toPromise().then(response => {
+      this.saveToken(response.json().access_token);
+    }).catch(response => {
+      if (response.status === 400) {
+        const responseJson = response.json();
 
-          if (responseJson.error === 'invalid_grant') {
-            return Promise.reject('Usuário ou senha inválida!');
-          }
+        if (responseJson.error === 'invalid_grant') {
+          return Promise.reject('Usuário ou senha inválida!');
         }
+      }
 
-        return Promise.reject(response);
-      });
+      return Promise.reject(response);
+    });
   }
 
   /**
    * Obtém novo token, fazendo o seu refresh quando expirar o antigo.
    */
-  obterNovoAccessToken(): Promise<void> {
+  getNewAccessToken(): Promise<void> {
     const headers = new Headers();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
     headers.append('Authorization', 'Basic YW5ndWxhcjphbmd1bGFy');
 
     const body = 'grant_type=refresh_token';
 
-    return this.http.post(this.oauthTokenUrl, body,
-        { headers, withCredentials: true })
-      .toPromise()
-      .then(response => {
-        this.armazenarToken(response.json().access_token);
-
-        console.log('Novo access token criado!');
-
-        return Promise.resolve(null);
-      })
-      .catch(response => {
-        console.error('Erro ao renovar token.', response);
-        return Promise.resolve(null);
-      });
+    return this.http.post(this.getUrl(), body, { headers, withCredentials: true }).toPromise().then(response => {
+      this.saveToken(response.json().access_token);
+      console.log('Novo access token criado!');
+      return Promise.resolve(null);
+    }).catch(response => {
+      console.error('Erro ao renovar token.', response);
+      return Promise.resolve(null);
+    });
   }
 
   /**
    * Limpa o token do jwt.
    */
-  limparAccessToken() {
+  clearAccessToken() {
     localStorage.removeItem('token');
     this.jwtPayload = null;
   }
@@ -95,7 +81,7 @@ export class AuthService {
   /**
    * Retorna se o token é inválido ou está expirado.
    */
-  isAccessTokenInvalido() {
+  isInvalidAccessToken() {
     const token = localStorage.getItem('token');
     return !token || this.jwtHelper.isTokenExpired(token);
   }
@@ -110,18 +96,12 @@ export class AuthService {
   }
 
   /**
-   * Retorna true se o usuário tem todas roles(permissões)
+   * Retorna true se o usuário tem a role de permissão.
    * 
    * @param roles 
    */
-  temQualquerPermissao(roles) {
-    for (const role of roles) {
-      if (this.temPermissao(role)) {
-        return true;
-      }
-    }
-
-    return false;
+  temQualquerPermissao(roles: Array<string>) {
+    return roles.findIndex(role => this.temPermissao(role)) > -1 ? true : false;
   }
 
   /**
@@ -129,7 +109,7 @@ export class AuthService {
    * 
    * @param token
    */
-  private armazenarToken(token: string) {
+  private saveToken(token: string) {
     this.jwtPayload = this.jwtHelper.decodeToken(token);
     localStorage.setItem('token', token);
   }
@@ -137,11 +117,11 @@ export class AuthService {
   /**
    * Carrega o token e armazena-o.
    */
-  private carregarToken() {
+  private loadToken() {
     const token = localStorage.getItem('token');
 
     if (token) {
-      this.armazenarToken(token);
+      this.saveToken(token);
     }
   }
 

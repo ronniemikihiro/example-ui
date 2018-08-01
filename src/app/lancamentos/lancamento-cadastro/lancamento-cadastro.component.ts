@@ -6,10 +6,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastyService } from 'ng2-toasty';
 
 import { ErrorHandlerService } from './../../core/error-handler.service';
-import { CategoriaService } from './../../categorias/categoria.service';
-import { PessoaService } from './../../pessoas/pessoa.service';
+import { CategoriaService } from '../../service/categoria.service';
+import { PessoaService } from '../../service/pessoa.service';
 import { Lancamento } from './../../core/model';
-import { LancamentoService } from './../lancamento.service';
+import { LancamentoService } from '../../service/lancamento.service';
 
 @Component({
   selector: 'app-lancamento-cadastro',
@@ -79,12 +79,12 @@ export class LancamentoCadastroComponent implements OnInit {
    * @param codigo 
    */
   carregarLancamento(codigo: number) {
-    this.lancamentoService.buscarPorCodigo(codigo)
-      .then(lancamento => {
-        this.lancamento = lancamento;
-        this.atualizarTituloEdicao();
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+    this.lancamentoService.buscarPorCodigo(codigo).then(lancamento => {
+      this.lancamento = lancamento;
+      this.atualizarTituloEdicao();
+    }).catch(erro => {
+      this.errorHandler.handle(erro)
+    });
   }
 
  /**
@@ -106,14 +106,12 @@ export class LancamentoCadastroComponent implements OnInit {
    * @param form 
    */
   adicionarLancamento(form: FormControl) {
-    this.lancamentoService.adicionar(this.lancamento)
-      .then(lancamentoAdicionado => {
-        this.toasty.success('Lançamento adicionado com sucesso!');
-        this.novo(form);
-      })
-      .catch(erro => {
-        this.errorHandler.handle(erro)
-      });
+    this.lancamentoService.adicionar(this.lancamento).then(lancamentoAdicionado => {
+      this.toasty.success('Lançamento adicionado com sucesso!');
+      this.novo(form);
+    }).catch(erro => {
+      this.errorHandler.handle(erro)
+    });
   }
 
   /**
@@ -122,35 +120,35 @@ export class LancamentoCadastroComponent implements OnInit {
    * @param form 
    */
   atualizarLancamento(form: FormControl) {
-    this.lancamentoService.atualizar(this.lancamento)
-      .then(lancamento => {
-        this.lancamento = lancamento;
-        this.toasty.success('Lançamento alterado com sucesso!');
-        this.novo(form);
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+    this.lancamentoService.atualizar(this.lancamento).then(lancamento => {
+      this.lancamento = lancamento;
+      this.toasty.success('Lançamento alterado com sucesso!');
+      this.novo(form);
+    }).catch(erro => {
+      this.errorHandler.handle(erro)
+    });
   }
 
   /**
    * Carrega as categorias para a combo select.
    */
   carregarCategorias() {
-    return this.categoriaService.listarTodas()
-      .then(categorias => {
-        this.categorias = categorias.map(c => ({ label: c.nome, value: c.codigo }));
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+    this.categoriaService.listarTodas().then(categorias => {
+      this.categorias = categorias.map(c => ({ label: c.nome, value: c.codigo }));
+    }).catch(erro => {
+      this.errorHandler.handle(erro)
+    });
   }
 
   /**
    * Carrega as pessoas para a combo select.
    */
   carregarPessoas() {
-    this.pessoaService.listarTodas()
-      .then(pessoas => {
-        this.pessoas = pessoas.map(p => ({ label: p.nome, value: p.codigo }));
-      })
-      .catch(erro => this.errorHandler.handle(erro));
+    this.pessoaService.listarTodas().then(pessoas => {
+      this.pessoas = pessoas.map(p => ({ label: p.nome, value: p.codigo }));
+    }).catch(erro => {
+      this.errorHandler.handle(erro)
+    });
   }
 
   /**

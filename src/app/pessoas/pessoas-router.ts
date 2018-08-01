@@ -35,4 +35,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class PessoasRoutingModule { }
+export class PessoasRouter { }

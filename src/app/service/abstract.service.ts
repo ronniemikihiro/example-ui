@@ -41,7 +41,7 @@ export abstract class AbstractService {
    *
    * @param response
    */
-  protected resolveJsonData(response: Response) {
+  protected responseJsonData(response: Response) {
     return response.json();
   }
 
@@ -50,7 +50,7 @@ export abstract class AbstractService {
    * 
    * @param response
    */
-  protected resolveJsonDataTablePage(response: Response) {
+  protected responseJsonDataTablePage(response: Response) {
     const responseJson = response.json();
     return {
       dados: responseJson.content,

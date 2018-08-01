@@ -1,8 +1,7 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { Response } from '@angular/http';
 
-import { NotAuthenticatedError } from './../seguranca/seguranca-http';
+import { NotAuthenticatedError } from '../seguranca/intercept-http';
 import { ToastyService } from 'ng2-toasty';
 
 @Injectable()

@@ -8,10 +8,10 @@ import { ButtonModule } from 'primeng/components/button/button';
 import { InputTextModule } from 'primeng/components/inputtext/inputtext';
 
 import { AuthGuard } from './auth.guard';
-import { LogoutService } from './logout.service';
-import { AuthService } from './auth.service';
-import { SegurancaHttp } from './seguranca-http';
-import { SegurancaRoutingModule } from './seguranca-routing.module';
+import { LogoutService } from '../service/logout.service';
+import { AuthService } from '../service/auth.service';
+import { InterceptHttp } from './intercept-http';
+import { SegurancaRouter } from './seguranca-router';
 import { LoginFormComponent } from './login-form/login-form.component';
 
 export function authHttpServiceFactory(auth: AuthService, http: Http, options: RequestOptions) {
@@ -21,7 +21,7 @@ export function authHttpServiceFactory(auth: AuthService, http: Http, options: R
     ]
   });
 
-  return new SegurancaHttp(auth, config, http, options);
+  return new InterceptHttp(auth, config, http, options);
 }
 
 @NgModule({
@@ -32,7 +32,7 @@ export function authHttpServiceFactory(auth: AuthService, http: Http, options: R
     InputTextModule,
     ButtonModule,
 
-    SegurancaRoutingModule
+    SegurancaRouter
   ],
   declarations: [LoginFormComponent],
   providers: [
