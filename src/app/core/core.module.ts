@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 
 import { ConfirmationService } from 'primeng/components/common/api';
 import { ConfirmDialogModule } from 'primeng/components/confirmdialog/confirmdialog';
+import { PanelMenuModule } from 'primeng/components/panelmenu/panelmenu';
 import { ToastyModule } from 'ng2-toasty';
 import { JwtHelper } from 'angular2-jwt';
 
@@ -26,6 +27,7 @@ import { PaginaNaoEncontradaComponent } from './pagina-nao-encontrada.component'
 
     ToastyModule.forRoot(),
     ConfirmDialogModule,
+    PanelMenuModule
   ],
   declarations: [
     NavbarComponent,

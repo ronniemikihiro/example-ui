@@ -1,9 +1,12 @@
 <app-navbar *ngIf="exibindoNavbar()"></app-navbar>
+
+<br/><br/>
+
 <router-outlet></router-outlet>
 
 <ng2-toasty></ng2-toasty>
 
-<p-confirmDialog header="Confirmação" icon="fa fa-question-circle" #confirmacao>
+<p-confirmDialog header="{{'TITLE_CONFIRMACAO' | i18n}}" icon="fa fa-question-circle" #confirmacao>
   <p-footer>
     <button type="button" pButton icon="fa-check" label="Sim"
       (click)="confirmacao.accept()"></button>

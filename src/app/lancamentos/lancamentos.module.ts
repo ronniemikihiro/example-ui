@@ -1,4 +1,3 @@
-import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -13,10 +12,11 @@ import { DataTableModule } from 'primeng/components/datatable/datatable';
 import { ButtonModule } from 'primeng/components/button/button';
 import { InputTextModule } from 'primeng/components/inputtext/inputtext';
 
-import { LancamentosRoutingModule } from './lancamentos-routing.module';
+import { LancamentoRouter } from './lancamento-router';
 import { SharedModule } from './../shared/shared.module';
 import { LancamentosPesquisaComponent } from './lancamentos-pesquisa/lancamentos-pesquisa.component';
 import { LancamentoCadastroComponent } from './lancamento-cadastro/lancamento-cadastro.component';
+import { MessageModule } from '../message/message.module';
 
 /**
  * Módulos utilizados para o CRUD da entidade Lancamento.
@@ -37,7 +37,8 @@ import { LancamentoCadastroComponent } from './lancamento-cadastro/lancamento-ca
     CurrencyMaskModule,
 
     SharedModule,
-    LancamentosRoutingModule
+    LancamentoRouter,
+    MessageModule
   ],
   declarations: [
     LancamentoCadastroComponent,

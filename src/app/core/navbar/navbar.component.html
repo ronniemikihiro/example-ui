@@ -1,20 +1,38 @@
-<nav class="navbar">
+<div class="topnav" id="myTopnav">
+  <a class="active" routerLink="/lancamentos" (click)="toggleNavbar()"><i class="fa fa-home"></i> Home</a>
+  <a *ngIf="auth.temPermissao('ROLE_PESQUISAR_LANCAMENTO')" routerLink="/lancamentos" (click)="toggleNavbar()"><i class="fa fa-pencil"></i> Lançamentos</a>
+  <a *ngIf="auth.temPermissao('ROLE_PESQUISAR_PESSOA')" routerLink="/pessoas" (click)="toggleNavbar()"><i class="fa fa-users"></i> Pessoas</a>
 
-  <div class="container">
-    <div class="ui-g">
-      <div class="ui-g-12">
-        <a href="javascript:;" class="navbar-toggle" (click)="exibindoMenu = !exibindoMenu"><i class="fa fa-bars"></i></a>
-      </div>
+  <div class="dropdown">
+    <button class="dropbtn" (click)="expandDropdown('dropDownSobre')">
+      <i class="fa fa-info-circle"></i> Sobre <i class="fa fa-caret-down"></i>
+    </button>
+    <div id="dropDownSobre" class="dropdown-content">
+      <a><i class="fa fa-copyright"></i> Desenvolvimento por Ronnie M.S.L.</a>
     </div>
   </div>
 
-  <ul class="navbar-menu" [hidden]="!exibindoMenu">
-    <li class="navbar-usuario">{{ auth.jwtPayload?.nome }}</li>
-    <li class="navbar-menuitem" routerLinkActive="ativo"
-      *ngIf="auth.temPermissao('ROLE_PESQUISAR_LANCAMENTO')"><a routerLink="/lancamentos">Lançamentos</a></li>
-    <li class="navbar-menuitem" routerLinkActive="ativo"
-      *ngIf="auth.temPermissao('ROLE_PESQUISAR_PESSOA')"><a routerLink="/pessoas">Pessoas</a></li>
-    <li class="navbar-menuitem"><a href="javascript:;" (click)="logout()">Logout</a></li>
-  </ul>
+  <div class="dropdown">
+    <button class="dropbtn" (click)="expandDropdown('dropDownCadastro')">
+      <i class="fa fa-book"></i> Cadastro <i class="fa fa-caret-down"></i>  
+    </button>
+    <div id="dropDownCadastro" class="dropdown-content">
+      <a><i class="fa fa-user"></i> Usuário</a>
+      <a><i class="fa fa-address-card"></i> Endereço</a>
+      <a><i class="fa fa-envelope"></i> Email</a>
+    </div>
+  </div>
+  
+  <div class="dropdown">
+    <button class="dropbtn" (click)="expandDropdown('dropDownUser')">
+        <i class="fa fa-user"></i> {{ auth.jwtPayload?.nome }} <i class="fa fa-caret-down"></i>
+    </button>
+    <div id="dropDownUser" class="dropdown-content">
+      <a href="javascript:;" (click)="logout()"><i class="fa fa-sign-out"></i> Logout</a>
+    </div>
+  </div>
 
-</nav>
+  <a href="javascript:void(0);" class="icon" (click)="toggleNavbar()">
+    <i class="fa fa-bars"></i>
+  </a>
+</div>

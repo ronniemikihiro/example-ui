@@ -4,7 +4,7 @@
     <form autocomplete="off" (ngSubmit)="pesquisar()">
 
       <div class="ui-g-12">
-        <h1>Lançamentos</h1>
+        <h1>{{'TITLE_LANCAMENTOS' | i18n}}</h1>
       </div>
 
       <div class="ui-g-12 ui-fluid">
@@ -52,7 +52,7 @@
             <span [style.color]="lanc.tipo === 'DESPESA' ? 'red' : 'blue'">{{ lanc.valor | number:'1.2-2' }}</span>
           </ng-template>
         </p-column>
-        <p-column styleClass="col-acoes">
+        <p-column header="Ações" styleClass="col-acoes">
             <ng-template let-lanc="rowData" pTemplate="body">
               <a pButton icon="fa-pencil" pTooltip="Editar"
                 tooltipPosition="top"

@@ -5,8 +5,8 @@ import { AuthHttp } from 'angular2-jwt';
 import * as moment from 'moment';
 import 'rxjs/add/operator/toPromise';
 
-import { environment } from './../../environments/environment';
 import { Lancamento } from './../core/model';
+import { AbstractService } from '../service/abstract.service';
 
 export class LancamentoFiltro {
   descricao: string;
@@ -17,9 +17,7 @@ export class LancamentoFiltro {
 }
 
 @Injectable()
-export class LancamentoService {
-
-  lancamentosUrl: string;
+export class LancamentoService extends AbstractService {
 
   /**
    * Construtor da Classe.
@@ -27,7 +25,7 @@ export class LancamentoService {
    * @param http 
    */
   constructor(private http: AuthHttp) {
-    this.lancamentosUrl = `${environment.apiUrl}/lancamentos`;
+    super('/lancamentos');
   }
 
   /**
@@ -44,28 +42,14 @@ export class LancamentoService {
     if (filtro.descricao) {
       params.set('descricao', filtro.descricao);
     }
-
     if (filtro.dataVencimentoInicio) {
       params.set('dataVencimentoDe', moment(filtro.dataVencimentoInicio).format('YYYY-MM-DD'));
     }
-
     if (filtro.dataVencimentoFim) {
       params.set('dataVencimentoAte', moment(filtro.dataVencimentoFim).format('YYYY-MM-DD'));
     }
 
-    return this.http.get(`${this.lancamentosUrl}/filtro/paginacao`, { search: params })
-      .toPromise()
-      .then(response => {
-        const responseJson = response.json();
-        const lancamentos = responseJson.content;
-
-        const resultado = {
-          lancamentos,
-          total: responseJson.totalElements
-        };
-
-        return resultado;
-      });
+    return this.http.get(this.getUrl(`/filtro/paginacao`), { search: params }).toPromise().then(this.resolveJsonDataTablePage);
   }
 
   /**
@@ -74,9 +58,7 @@ export class LancamentoService {
    * @param codigo 
    */
   excluir(codigo: number): Promise<void> {
-    return this.http.delete(`${this.lancamentosUrl}/${codigo}`)
-      .toPromise()
-      .then(() => null);
+    return this.http.delete(this.getUrl(`/${codigo}`)).toPromise().then(() => null);
   }
 
   /**
@@ -85,9 +67,7 @@ export class LancamentoService {
    * @param lancamento 
    */
   adicionar(lancamento: Lancamento): Promise<Lancamento> {
-    return this.http.post(`${this.lancamentosUrl}/`, JSON.stringify(lancamento))
-      .toPromise()
-      .then(response => response.json());
+    return this.http.post(this.getUrl(), JSON.stringify(lancamento)).toPromise().then(this.resolveJsonData);
   }
 
   /**
@@ -96,13 +76,11 @@ export class LancamentoService {
    * @param lancamento 
    */
   atualizar(lancamento: Lancamento): Promise<Lancamento> {
-    return this.http.put(`${this.lancamentosUrl}/${lancamento.codigo}`, JSON.stringify(lancamento))
-      .toPromise()
-      .then(response => {
-        const lancamentoAlterado = response.json() as Lancamento;
-        this.converterStringsParaDatas([lancamentoAlterado]);
-        return lancamentoAlterado;
-      });
+    return this.http.put(this.getUrl(`/${lancamento.codigo}`), JSON.stringify(lancamento)).toPromise().then(response => {
+      const lancamentoAlterado = response.json() as Lancamento;
+      this.converterStringsParaDatas([lancamentoAlterado]);
+      return lancamentoAlterado;
+    });
   }
 
   /**
@@ -111,13 +89,11 @@ export class LancamentoService {
    * @param codigo 
    */
   buscarPorCodigo(codigo: number): Promise<Lancamento> {
-    return this.http.get(`${this.lancamentosUrl}/${codigo}`)
-      .toPromise()
-      .then(response => {
-        const lancamento = response.json() as Lancamento;
-        this.converterStringsParaDatas([lancamento]);
-        return lancamento;
-      });
+    return this.http.get(this.getUrl(`/${codigo}`)).toPromise().then(response => {
+      const lancamento = response.json() as Lancamento;
+      this.converterStringsParaDatas([lancamento]);
+      return lancamento;
+    });
   }
 
   /**

@@ -9,6 +9,9 @@ import { PessoasModule } from './pessoas/pessoas.module';
 import { LancamentosModule } from './lancamentos/lancamentos.module';
 import { SegurancaModule } from './seguranca/seguranca.module';
 import { AppRoutingModule } from './app-routing.module';
+import { MessageModule } from './message/message.module';
+import { MessageResourceProvider } from './message/message.resource';
+import { AppMessage } from './app.message';
 
 @NgModule({
   declarations: [
@@ -22,9 +25,15 @@ import { AppRoutingModule } from './app-routing.module';
     LancamentosModule,
     PessoasModule,
     SegurancaModule,
-    AppRoutingModule
+    AppRoutingModule,
+    MessageModule.forRoot()
   ],
-  providers: [],
+  providers: [
+    {
+      provide: MessageResourceProvider,
+      useValue: AppMessage,
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
